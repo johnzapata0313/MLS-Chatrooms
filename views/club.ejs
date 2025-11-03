@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= club.name %> - Fan Room</title>
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="club-header" style="border-bottom: 4px solid <%= club.color %>">
+    <a href="/" class="back-link">← All Clubs</a>
+    <h1><%= club.name %></h1>
+    <h2>Fan Discussion Board</h2>
+  </header>
+
+  <main class="club-main">
+    <section class="post-form-section">
+      <h3>Share Your Thoughts:</h3>
+      <form action="/club/<%= club.id %>/messages" method="POST" class="post-form">
+        <input type="text" placeholder="Your name" name="name" required>
+        <textarea placeholder="What's on your mind?" name="msg" rows="3" required></textarea>
+        <button type="submit" style="background-color: <%= club.color %>">Post</button>
+      </form>
+    </section>
+
+    <section class="messages-section">
+      <h3>What Fans Are Saying:</h3>
+      
+      <% if(messages.length === 0) { %>
+        <p class="no-messages">Be the first to post! Share your thoughts about <%= club.name %>.</p>
+      <% } %>
+
+      <ul class="messages">
+      <% for(var i=0; i<messages.length; i++) {%>
+        <li class="message" data-id="<%= messages[i]._id %>">
+          <div class="message-header">
+            <span class="message-author"><%= messages[i].name %></span>
+            <% if(messages[i].timestamp) { %>
+              <span class="timestamp">
+                <%
+                  const now = new Date();
+                  const postTime = new Date(messages[i].timestamp);
+                  const diffMs = now - postTime;
+                  const diffMins = Math.floor(diffMs / 60000);
+                  const diffHours = Math.floor(diffMins / 60);
+                  const diffDays = Math.floor(diffHours / 24);
+                  
+                  let timeAgo;
+                  if (diffMins < 1) {
+                    timeAgo = "just now";
+                  } else if (diffMins < 60) {
+                    timeAgo = diffMins + " minute" + (diffMins === 1 ? "" : "s") + " ago";
+                  } else if (diffHours < 24) {
+                    timeAgo = diffHours + " hour" + (diffHours === 1 ? "" : "s") + " ago";
+                  } else {
+                    timeAgo = diffDays + " day" + (diffDays === 1 ? "" : "s") + " ago";
+                  }
+                %>
+                <%= timeAgo %>
+              </span>
+            <% } %>
+          </div>
+          <div class="message-content">
+            <%= messages[i].msg %>
+          </div>
+          <div class="message-actions">
+            <button class="thumb-btn thumb-up">
+              <i class="fa fa-thumbs-up"></i>
+              <span><%= messages[i].thumbUp %></span>
+            </button>
+            <button class="thumb-btn thumb-down">
+              <i class="fa fa-thumbs-down"></i>
+              <span><%= messages[i].thumbDown %></span>
+            </button>
+            <!-- <button class="delete-btn"><i class="fa fa-trash"></i></button> -->
+          </div>
+        </li>
+      <% } %>
+      </ul>
+    </section>
+  </main>
+
+  <script src="/main.js"></script>
+</body>
+</html>
