@@ -1,3 +1,11 @@
+/* Used claude with assistance adding font to css */
+@font-face {
+  font-family: 'Super Kindly';
+  src: url('/fonts/Super Kindly.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,31 +13,55 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+   font-family: 'Super Kindly', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f5f5f5;
   color: #333;
   line-height: 1.6;
 }
 
+/* Homepage Specific Styles */
+body.homepage {
+  background-image: url('/img/cartoonsoccer-pitch.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+body.homepage::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
 /* Header Styles */
 header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+  background: transparent;
   color: white;
-  padding: 2rem;
+  padding: 3rem 2rem;
   text-align: center;
 }
 
 header h1 {
-  font-size: 2.5rem;
+  font-size: 7rem;
   margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 18px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
 }
 
 header p {
-  font-size: 1.1rem;
-  opacity: 0.9;
+  font-size: 1.3rem;
+  text-shadow: 1px 1px 14px rgba(0, 0, 0, 0.8);
 }
 
 .club-header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
   position: relative;
 }
 
@@ -47,36 +79,61 @@ header p {
   opacity: 0.7;
 }
 
-/* Homepage Grid */
+/* Homepage Grid - Centered */
 .clubs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .club-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 12px;
   border: 3px solid transparent;
   text-decoration: none;
   color: #333;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
   position: relative;
   overflow: hidden;
+  text-align: center;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .club-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 1);
+}
+
+.club-logo-placeholder {
+  width: 80px;
+  height: 80px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #999;
+  text-align: center;
+  padding: 0.5rem;
+  border: 2px solid #ddd;
 }
 
 .club-card h2 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .club-color-bar {
@@ -84,10 +141,10 @@ header p {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 6px;
 }
 
-/* Club Page */
+/* Club Page - Green Chat Bubbles */
 .club-main {
   max-width: 900px;
   margin: 2rem auto;
@@ -97,9 +154,9 @@ header p {
 .post-form-section {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 .post-form-section h3 {
@@ -117,7 +174,7 @@ header p {
 .post-form textarea {
   padding: 0.75rem;
   border: 2px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 0.3s;
@@ -126,7 +183,7 @@ header p {
 .post-form input:focus,
 .post-form textarea:focus {
   outline: none;
-  border-color: #666;
+  border-color: #4a7c59;
 }
 
 .post-form textarea {
@@ -136,21 +193,22 @@ header p {
 
 .post-form button {
   padding: 0.75rem 1.5rem;
-  background-color: #333;
+  background-color: #4a7c59;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: opacity 0.3s;
+  transition: background-color 0.3s;
   align-self: flex-start;
+  font-weight: 600;
 }
 
 .post-form button:hover {
-  opacity: 0.8;
+  background-color: #3d6749;
 }
 
-/* Messages Section */
+/* Messages Section - Square Green Bubbles */
 .messages-section h3 {
   margin-bottom: 1.5rem;
   color: #333;
@@ -167,19 +225,21 @@ header p {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .message {
-  background: white;
+  background: #4a7c59;
   padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s;
+  border-radius: 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  color: white;
 }
 
 .message:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .message-header {
@@ -188,23 +248,25 @@ header p {
   align-items: center;
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .message-author {
   font-weight: 600;
-  color: #333;
+  color: #fff;
+  font-size: 1.05rem;
 }
 
 .timestamp {
   font-size: 0.85rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .message-content {
   margin-bottom: 1rem;
-  color: #555;
+  color: #fff;
   line-height: 1.6;
+  font-size: 1rem;
 }
 
 .message-actions {
@@ -218,16 +280,18 @@ header p {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
   font-size: 0.9rem;
+  color: white;
 }
 
 .thumb-btn:hover {
-  background: #e8e8e8;
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .thumb-btn i {
@@ -235,29 +299,28 @@ header p {
 }
 
 .thumb-up:hover {
-  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.3);
   border-color: #4CAF50;
 }
 
 .thumb-down:hover {
-  color: #f44336;
+  background: rgba(244, 67, 54, 0.3);
   border-color: #f44336;
 }
 
 .delete-btn {
   margin-left: auto;
   padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
   cursor: pointer;
-  color: #999;
+  color: white;
   transition: all 0.3s;
 }
 
 .delete-btn:hover {
   background: #f44336;
-  color: white;
   border-color: #f44336;
 }
 
@@ -265,20 +328,26 @@ header p {
 footer {
   text-align: center;
   padding: 2rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.club-header + * footer {
+  color: #999;
+  text-shadow: none;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   header h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .clubs-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
   }
 
   .club-main {
@@ -289,5 +358,9 @@ footer {
     position: static;
     display: block;
     margin-bottom: 1rem;
+  }
+
+  .message {
+    padding: 1.25rem;
   }
 }

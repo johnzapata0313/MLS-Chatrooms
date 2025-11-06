@@ -6,43 +6,44 @@ const MongoClient = require('mongodb').MongoClient
 var db, collection;
 
 const url = "mongodb+srv://demo:demo@cluster0-q2ojb.mongodb.net/test?retryWrites=true";
-const dbName = "mlsfanhub"; // New database name
+const dbName = "mlsfanhub"; 
 
+//used claude to generate the style of each individual MLS Club Room
 // MLS Clubs data
 const mlsClubs = [
-  { id: 'atlanta-united', name: 'Atlanta United FC', color: '#80000B' },
-  { id: 'austin-fc', name: 'Austin FC', color: '#00B140' },
-  { id: 'charlotte-fc', name: 'Charlotte FC', color: '#00B2E3' },
-  { id: 'chicago-fire', name: 'Chicago Fire FC', color: '#C8102E' },
-  { id: 'fc-cincinnati', name: 'FC Cincinnati', color: '#FE5000' },
-  { id: 'colorado-rapids', name: 'Colorado Rapids', color: '#862633' },
-  { id: 'columbus-crew', name: 'Columbus Crew', color: '#FFF200' },
-  { id: 'dc-united', name: 'D.C. United', color: '#EF3E42' },
-  { id: 'fc-dallas', name: 'FC Dallas', color: '#BF0D3E' },
-  { id: 'houston-dynamo', name: 'Houston Dynamo FC', color: '#F68712' },
-  { id: 'inter-miami', name: 'Inter Miami CF', color: '#F7B5CD' },
-  { id: 'la-galaxy', name: 'LA Galaxy', color: '#00245D' },
-  { id: 'lafc', name: 'Los Angeles FC', color: '#C39E6D' },
-  { id: 'minnesota-united', name: 'Minnesota United FC', color: '#8CD2F4' },
-  { id: 'cf-montreal', name: 'CF Montréal', color: '#00529B' },
-  { id: 'nashville-sc', name: 'Nashville SC', color: '#EDE939' },
-  { id: 'new-england', name: 'New England Revolution', color: '#C8102E' },
-  { id: 'nycfc', name: 'New York City FC', color: '#6CACE4' },
-  { id: 'ny-red-bulls', name: 'New York Red Bulls', color: '#ED1E36' },
-  { id: 'orlando-city', name: 'Orlando City SC', color: '#612B9B' },
-  { id: 'philadelphia-union', name: 'Philadelphia Union', color: '#B1872D' },
-  { id: 'portland-timbers', name: 'Portland Timbers', color: '#004812' },
-  { id: 'real-salt-lake', name: 'Real Salt Lake', color: '#B30838' },
-  { id: 'san-jose', name: 'San Jose Earthquakes', color: '#0051BA' },
-  { id: 'seattle-sounders', name: 'Seattle Sounders FC', color: '#5D9741' },
-  { id: 'sporting-kc', name: 'Sporting Kansas City', color: '#93B1D7' },
-  { id: 'st-louis-city', name: 'St. Louis City SC', color: '#5DBCD2' },
-  { id: 'toronto-fc', name: 'Toronto FC', color: '#B81137' },
-  { id: 'vancouver-whitecaps', name: 'Vancouver Whitecaps FC', color: '#9DC2EA' },
-  { id: 'san-diego-fc', name: 'San Diego FC', color: '#000000' }
+  { id: 'atlanta-united', name: 'Atlanta United FC', color: '#80000B', logo: 'Atlanta_MLS.svg.png' },
+  { id: 'austin-fc', name: 'Austin FC', color: '#00B140', logo: 'Austin_FC_logo.svg.png' },
+  { id: 'charlotte-fc', name: 'Charlotte FC', color: '#00B2E3', logo: 'Charlotte_FC_logo.svg.png' },
+  { id: 'chicago-fire', name: 'Chicago Fire FC', color: '#C8102E', logo: 'Chicago_Fire_logo,_2021.svg.png' },
+  { id: 'fc-cincinnati', name: 'FC Cincinnati', color: '#FE5000', logo: 'FC_Cincinnati_primary_logo_2018.svg.png' },
+  { id: 'colorado-rapids', name: 'Colorado Rapids', color: '#862633', logo: 'Colorado_Rapids_logo.svg.png' },
+  { id: 'columbus-crew', name: 'Columbus Crew', color: '#FFF200', logo: 'Columbus_Crew_logo_2021.svg.png' },
+  { id: 'dc-united', name: 'D.C. United', color: '#EF3E42', logo: 'D.C._United_logo_(2016).svg.png' },
+  { id: 'fc-dallas', name: 'FC Dallas', color: '#BF0D3E', logo: 'FC_Dallas_logo.svg.png' },
+  { id: 'houston-dynamo', name: 'Houston Dynamo FC', color: '#F68712', logo: 'Houston_Dynamo_FC_logo.svg.png' },
+  { id: 'inter-miami', name: 'Inter Miami CF', color: '#F7B5CD', logo: 'Inter_Miami_CF_logo.svg.png' },
+  { id: 'la-galaxy', name: 'LA Galaxy', color: '#00245D', logo: 'Los_Angeles_Galaxy_logo.svg.png' },
+  { id: 'lafc', name: 'Los Angeles FC', color: '#C39E6D', logo: 'Los_Angeles_Football_Club.svg.png' },
+  { id: 'minnesota-united', name: 'Minnesota United FC', color: '#8CD2F4', logo: 'Minnesota_United_FC_(MLS)_Primary_logo.svg.png' },
+  { id: 'cf-montreal', name: 'CF Montréal', color: '#00529B', logo: 'CF_Montreal_logo_2023.svg.png' },
+  { id: 'nashville-sc', name: 'Nashville SC', color: '#EDE939', logo: 'Nashville_SC_logo,_2020.svg.png' },
+  { id: 'new-england', name: 'New England Revolution', color: '#C8102E', logo: 'New_England_Revolution_(2021)_logo.svg.png' },
+  { id: 'nycfc', name: 'New York City FC', color: '#6CACE4', logo: 'Logo_New_York_City_FC_2025.svg.png' },
+  { id: 'ny-red-bulls', name: 'New York Red Bulls', color: '#ED1E36', logo: 'New_York_Red_Bulls_logo.svg.png' },
+  { id: 'orlando-city', name: 'Orlando City SC', color: '#612B9B', logo: 'Orlando_City_2014.svg.png' },
+  { id: 'philadelphia-union', name: 'Philadelphia Union', color: '#B1872D', logo: 'Philadelphia_Union_2018_logo.svg.png' },
+  { id: 'portland-timbers', name: 'Portland Timbers', color: '#004812', logo: 'Portland_Timbers_logo.svg.png' },
+  { id: 'real-salt-lake', name: 'Real Salt Lake', color: '#B30838', logo: 'Real_Salt_Lake_2010.svg.png' },
+  { id: 'san-jose', name: 'San Jose Earthquakes', color: '#0051BA', logo: 'San_Jose_Earthquakes_2014.svg.png' },
+  { id: 'seattle-sounders', name: 'Seattle Sounders FC', color: '#5D9741', logo: 'Seattle_Sounders_logo.svg.png' },
+  { id: 'sporting-kc', name: 'Sporting Kansas City', color: '#93B1D7', logo: 'Sporting_Kansas_City_logo.svg.png' },
+  { id: 'st-louis-city', name: 'St. Louis City SC', color: '#5DBCD2', logo: 'St._Louis_City_SC_logo.svg.png' },
+  { id: 'toronto-fc', name: 'Toronto FC', color: '#B81137', logo: 'Toronto_FC_Logo.svg.png' },
+  { id: 'vancouver-whitecaps', name: 'Vancouver Whitecaps FC', color: '#9DC2EA', logo: 'Vancouver_Whitecaps_logo.svg.png' },
+  { id: 'san-diego-fc', name: 'San Diego FC', color: '#000000', logo: 'San_Diego_FC_logo.svg.png' }
 ];
 
-app.listen(1933, () => {
+app.listen(1997, () => {
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
         if(error) {
             throw error;
@@ -80,7 +81,7 @@ app.get('/club/:clubId', (req, res) => {
   })
 })
 
-// Post message to specific club
+// Post message to specific club room
 app.post('/club/:clubId/messages', (req, res) => {
   const clubId = req.params.clubId;
   
