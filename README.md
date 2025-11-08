@@ -2,7 +2,7 @@
 
 A web application that creates dedicated chatrooms for each Major League Soccer (MLS) club, allowing fans to connect, share messages, and engage with their team's community.This is a full-stack CRUD (Create, Read, Update, Delete) application that provides 30 individual chatrooms—one for each MLS team. Fans can post messages, react with thumbs up/down, and participate in team-specific discussions to be a part of their respected communities. This project is the start for my demo day project. 
 
-/Users/johnzapata/Pictures/Photos Library.photoslibrary/originals/4/46AD5CF9-79E1-4D10-9F28-D8FDAFEEA8B0.jpeg 
+![46AD5CF9-79E1-4D10-9F28-D8FDAFEEA8B0](https://github.com/user-attachments/assets/ed3bd923-cbec-4913-8bd3-2f7a9b3926aa)
 
 ## 🛠️ Technologies Used
 
