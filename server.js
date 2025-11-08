@@ -6,7 +6,7 @@ const {ObjectId} = require('mongodb')
 
 var db, collection;
 
-const url = "mongodb+srv://demo:demo@cluster0-q2ojb.mongodb.net/test?retryWrites=true";
+const url = "mongodb+srv://demo:demo@cluster0.q2ojb.mongodb.net/mlsfanhub?retryWrites=true&w=majority";
 const dbName = "mlsfanhub"; 
 
 // MLS Clubs data
