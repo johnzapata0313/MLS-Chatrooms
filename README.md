@@ -4,7 +4,7 @@ A web application that creates dedicated chatrooms for each Major League Soccer 
 
 ![46AD5CF9-79E1-4D10-9F28-D8FDAFEEA8B0](https://github.com/user-attachments/assets/ed3bd923-cbec-4913-8bd3-2f7a9b3926aa)
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 ### Backend
 - **Node.js** - JavaScript runtime environment
@@ -30,7 +30,7 @@ A web application that creates dedicated chatrooms for each Major League Soccer 
 - **Responsive Design** - Each room styled with team colors and logos
 - **Real-time Updates** - Messages display with timestamps
 
-## 📚 Lessons Learned
+##  Lessons Learned
 
 ### 1. **Database Connection Timing**
 **Challenge:** Initial deployment failed because routes tried to access the database before the connection was established.
@@ -88,7 +88,7 @@ db.collection('messages').findOneAndDelete({_id: new ObjectId(req.body.id)})
 - `findOneAndUpdate()` - Update votes
 - `findOneAndDelete()` - Delete messages
 
-## 🎓 Key Takeaways
+##  Key Takeaways
 
 - **Server-side rendering** with EJS provides a straightforward way to build dynamic web applications
 - **Proper error handling** and connection management are critical for production deployments
@@ -96,13 +96,3 @@ db.collection('messages').findOneAndDelete({_id: new ObjectId(req.body.id)})
 - **Git workflow** and continuous deployment streamline the development process
 - **Database design** affects how easily you can query and display data
 - **User experience** benefits from team-specific theming and visual feedback
-
-## 🔮 Future Enhancements
-
-- User authentication and profiles
-- Real-time messaging with WebSockets
-- Image uploads for posts
-- Comment threading/replies
-- Moderator controls
-- Search functionality
-- Mobile app version
