@@ -2,13 +2,13 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
+const {ObjectId} = require('mongodb')
 
 var db, collection;
 
 const url = "mongodb+srv://demo:demo@cluster0-q2ojb.mongodb.net/test?retryWrites=true";
 const dbName = "mlsfanhub"; 
 
-//used claude to generate the style of each individual MLS Club Room
 // MLS Clubs data
 const mlsClubs = [
   { id: 'atlanta-united', name: 'Atlanta United FC', color: '#80000B', logo: 'Atlanta_MLS.svg.png' },
@@ -34,29 +34,34 @@ const mlsClubs = [
   { id: 'philadelphia-union', name: 'Philadelphia Union', color: '#B1872D', logo: 'Philadelphia_Union_2018_logo.svg.png' },
   { id: 'portland-timbers', name: 'Portland Timbers', color: '#004812', logo: 'Portland_Timbers_logo.svg.png' },
   { id: 'real-salt-lake', name: 'Real Salt Lake', color: '#B30838', logo: 'Real_Salt_Lake_2010.svg.png' },
+  { id: 'san-diego-fc', name: 'San Diego FC', color: '#000000', logo: 'San_Diego_FC_logo.svg.png' }, // ADDED COMMA HERE
   { id: 'san-jose', name: 'San Jose Earthquakes', color: '#0051BA', logo: 'San_Jose_Earthquakes_2014.svg.png' },
   { id: 'seattle-sounders', name: 'Seattle Sounders FC', color: '#5D9741', logo: 'Seattle_Sounders_logo.svg.png' },
   { id: 'sporting-kc', name: 'Sporting Kansas City', color: '#93B1D7', logo: 'Sporting_Kansas_City_logo.svg.png' },
   { id: 'st-louis-city', name: 'St. Louis City SC', color: '#5DBCD2', logo: 'St._Louis_City_SC_logo.svg.png' },
   { id: 'toronto-fc', name: 'Toronto FC', color: '#B81137', logo: 'Toronto_FC_Logo.svg.png' },
   { id: 'vancouver-whitecaps', name: 'Vancouver Whitecaps FC', color: '#9DC2EA', logo: 'Vancouver_Whitecaps_logo.svg.png' },
-  { id: 'san-diego-fc', name: 'San Diego FC', color: '#000000', logo: 'San_Diego_FC_logo.svg.png' }
 ];
 
-app.listen(1997, () => {
-    MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
-        if(error) {
-            throw error;
-        }
-        db = client.db(dbName);
-        console.log("Connected to `" + dbName + "`!");
-    });
-});
-
+// Middleware
 app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(express.static('public'))
+
+// CONNECT TO DATABASE FIRST, THEN START SERVER
+MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
+    if(error) {
+        throw error;
+    }
+    db = client.db(dbName);
+    console.log("Connected to `" + dbName + "`!");
+    
+    // START SERVER AFTER DB CONNECTION
+    app.listen(1997, () => {
+        console.log('Server listening on port 1997');
+    });
+});
 
 // Homepage - List all clubs
 app.get('/', (req, res) => {
@@ -102,7 +107,7 @@ app.post('/club/:clubId/messages', (req, res) => {
 // Thumb up
 app.put('/messages/thumbUp', (req, res) => {
   db.collection('messages')
-  .findOneAndUpdate({_id: req.body.id}, {
+  .findOneAndUpdate({_id: new ObjectId(req.body.id)}, { // FIXED: Convert string to ObjectId
     $inc: {
       thumbUp: 1
     }
@@ -118,7 +123,7 @@ app.put('/messages/thumbUp', (req, res) => {
 // Thumb down
 app.put('/messages/thumbDown', (req, res) => {
   db.collection('messages')
-  .findOneAndUpdate({_id: req.body.id}, {
+  .findOneAndUpdate({_id: new ObjectId(req.body.id)}, { // FIXED: Convert string to ObjectId
     $inc: {
       thumbDown: 1
     }
@@ -133,7 +138,7 @@ app.put('/messages/thumbDown', (req, res) => {
 
 // Delete message
 app.delete('/messages', (req, res) => {
-  db.collection('messages').findOneAndDelete({_id: req.body.id}, (err, result) => {
+  db.collection('messages').findOneAndDelete({_id: new ObjectId(req.body.id)}, (err, result) => { // FIXED: Convert string to ObjectId
     if (err) return res.send(500, err)
     res.send('Message deleted!')
   })
