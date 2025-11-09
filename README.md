@@ -21,7 +21,7 @@ A web application that creates dedicated chatrooms for each Major League Soccer 
 - **Render** - Cloud platform for hosting the application
 - **GitHub** - Version control and continuous deployment
 
-## ✨ Features
+##  Features
 
 - **30 individual Chatrooms** - One for each MLS club with custom branding
 - **Message Posting** - Fans can post messages to their team's room
