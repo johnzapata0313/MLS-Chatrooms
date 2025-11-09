@@ -32,62 +32,7 @@ A web application that creates dedicated chatrooms for each Major League Soccer 
 
 ##  Lessons Learned
 
-### 1. **Database Connection Timing**
-**Challenge:** Initial deployment failed because routes tried to access the database before the connection was established.
-
-**Solution:** Restructured code to start the Express server only after MongoDB connection succeeds:
-```javascript
-MongoClient.connect(url, (error, client) => {
-    if(error) throw error;
-    db = client.db(dbName);
-    
-    app.listen(PORT, () => {
-        console.log('Server running');
-    });
-});
-```
-
-### 2. **Environment-Specific Configuration**
-**Challenge:** Hardcoded port numbers caused deployment failures on Render.
-
-**Solution:** Used environment variables for flexible deployment:
-```javascript
-const PORT = process.env.PORT || 1997;
-```
-
-### 3. **MongoDB ObjectId Conversion**
-**Challenge:** Update and delete operations failed because string IDs weren't properly converted.
-
-**Solution:** Imported and used `ObjectId` from MongoDB:
-```javascript
-const {ObjectId} = require('mongodb');
-db.collection('messages').findOneAndDelete({_id: new ObjectId(req.body.id)})
-```
-
-### 4. **Static File Serving**
-**Challenge:** Understanding how Express serves static assets and proper folder structure.
-
-**Solution:** Learned that `app.use(express.static('public'))` maps the `public` folder to the root URL path, so `/img/logos/logo.png` serves from `public/img/logos/logo.png`.
-
-### 5. **Deployment Process**
-**Challenge:** Understanding the GitHub → Render deployment pipeline.
-
-**Solution:** Configured auto-deployment from GitHub, ensuring all assets (including images) are committed to the repository.
-
-### 6. **Version Compatibility**
-**Challenge:** MongoDB driver warnings about deprecated methods.
-
-**Solution:** Learned to distinguish between warnings (non-breaking) and errors (breaking), and made informed decisions about when to update dependencies in legacy codebases.
-
-### 7. **CRUD Operations**
-**Challenge:** Implementing full Create, Read, Update, Delete functionality with MongoDB.
-
-**Solution:** Mastered MongoDB methods:
-- `insertOne()` - Create messages
-- `find().toArray()` - Read messages
-- `findOneAndUpdate()` - Update votes
-- `findOneAndDelete()` - Delete messages
-
+During deployment, the primary challenge was establishing proper database connection timing—the Express server was starting before MongoDB connected, causing route failures. This was resolved by nesting the server startup inside the MongoDB connection callback. Additional deployment hurdles included configuring environment variables for dynamic port assignment (process.env.PORT), properly converting string IDs to MongoDB ObjectId format for update/delete operations, and understanding Express static file serving where the public folder maps to root URL paths. The project also involved setting up GitHub-to-Render auto-deployment, distinguishing between MongoDB driver warnings versus critical errors, and implementing full CRUD functionality using MongoDB methods (insertOne, find().toArray(), findOneAndUpdate, findOneAndDelete).
 ##  Key Takeaways
 
 - **Server-side rendering** with EJS provides a straightforward way to build dynamic web applications
