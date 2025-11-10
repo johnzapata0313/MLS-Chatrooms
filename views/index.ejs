@@ -17,7 +17,7 @@
     <% for(var i=0; i<clubs.length; i++) {%>
       <a href="/club/<%= clubs[i].id %>" class="club-card" style="border-color: <%= clubs[i].color %>">
      <div class="club-logo-placeholder">
-  <img src="/img/logos/<%= clubs[i].logo %>" alt="<%= clubs[i].name %> logo">
+  <img src="<%= clubs[i].logo %>" alt="<%= clubs[i].name %> logo">
 </div>
         <h2><%= clubs[i].name %></h2>
         <div class="club-color-bar" style="background-color: <%= clubs[i].color %>"></div>
