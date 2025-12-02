@@ -1,4 +1,4 @@
-// app/models/team.js
+// models/team.js
 var mongoose = require('mongoose');
 
 var teamSchema = mongoose.Schema({
@@ -9,7 +9,8 @@ var teamSchema = mongoose.Schema({
     longitude: Number,
     stadium: String,
     founded: Number,
-    colors: [String]
+    colors: [String],
+    logo: String  // Add this - URL to team logo image
 });
 
 module.exports = mongoose.model('Team', teamSchema);

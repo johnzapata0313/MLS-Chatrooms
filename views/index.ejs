@@ -5,20 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MLS Fan Hub - Connect with Your Team</title>
   <link rel="shortcut icon" href="favicon.ico">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="homepage">
+  <!-- Navigation Bar -->
+  <nav class="nav-container">
+    <div class="nav-wrapper">
+      <a href="/" class="nav-brand"> MLS FanRooms</a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/teams">Teams</a></li>
+      </ul>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Overlay for mobile menu -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+
   <header>
-    <h1>MLS Fan Hub</h1>
+    <h1>MLS FanRooms</h1>
     <p>Choose your club and connect with fellow supporters</p>
   </header>
 
   <main class="clubs-grid">
     <% for(var i=0; i<clubs.length; i++) {%>
-      <a href="/club/<%= clubs[i].id %>" class="club-card" style="border-color: <%= clubs[i].color %>">
-     <div class="club-logo-placeholder">
-  <img src="<%= clubs[i].logo %>" alt="<%= clubs[i].name %> logo">
-</div>
+      <a href="/chatroom/<%= clubs[i]._id %>" class="club-card" style="border-color: <%= clubs[i].color %>">
+        <div class="club-logo-placeholder">
+          <img src="<%= clubs[i].logo %>" alt="<%= clubs[i].name %> logo">
+        </div>
         <h2><%= clubs[i].name %></h2>
         <div class="club-color-bar" style="background-color: <%= clubs[i].color %>"></div>
       </a>
@@ -28,5 +50,32 @@
   <footer>
     <p>&copy; 2025 MLS Fan Hub - Unofficial fan community</p>
   </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    function toggleMenu() {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      menuOverlay.classList.toggle('active');
+      document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    }
+
+    hamburger.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking on overlay
+    menuOverlay.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navMenu.classList.contains('active')) {
+          toggleMenu();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

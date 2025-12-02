@@ -1,6 +1,15 @@
-// config/database.js
-module.exports = {
+const mongoose = require("mongoose");
+mongoose.set('strictQuery', false);
 
-    'url' : 'mongodb+srv://johnzapata0313_db_user:EIn2SoJLaALrOgvH@cluster1.fse9exr.mongodb.net/?appName=Cluster1', 
-    'dbName': 'demo'
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.DB_STRING);
+
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 };
+
+module.exports = connectDB;

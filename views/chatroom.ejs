@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= team.name %> Chatroom</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="chatroom-page">
+  <!-- New Chatroom Header with Wood Background -->
+  <div class="chatroom-header">
+    <a href="/main" class="back-link">← Back</a>
+    
+    <div class="chatroom-header-content">
+      <div class="chatroom-title-section">
+        <h1><%= team.name %></h1>
+        
+        <!-- Betting Ticker inside header -->
+        <div id="betting-content"></div>
+      </div>
+      
+      <!-- Logo Circle with Team Color on Right -->
+      <div class="chatroom-logo-container" style="background-color: <%= team.primaryColor || '#4a7c59' %>;">
+        <img src="<%= team.logo %>" alt="<%= team.name %> logo">
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Area with Soccer Field Background -->
+  <main class="club-main">
+    <!-- Post Form Section -->
+<!-- Post Form Section -->
+<section class="post-form-section">
+  <h3>Post a Message</h3>
+  <form class="message-form post-form" id="messageForm">
+    <input type="text" name="message" placeholder="Type your message..." required>
+    <input type="file" name="photo" accept="image/*">
+    <button type="submit">Send</button>
+  </form>
+</section>
+
+
+<section class="messages-section">
+  <h3>Messages</h3>
+  
+  <% if (messages && messages.length > 0) { %>
+    <ul class="messages">
+      <% messages.forEach(function(message) { %>
+        <li class="message">
+          <div class="message-header">
+            <span class="message-author">
+              <%= message.username || (message.user && message.user.userName) || 'Anonymous' %>
+            </span>
+            <span class="timestamp">
+              <%= message.createdAt ? new Date(message.createdAt).toLocaleString() : 'Unknown time' %>
+            </span>
+          </div>
+          
+          <div class="message-content">
+            <%= message.content || '' %>
+          </div>
+          
+          <% if (message.photo && message.photo.url) { %>
+            <div class="message-photo">
+              <img src="<%= message.photo.url %>" alt="Message photo" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">
+            </div>
+          <% } %>
+          
+          <div class="message-actions">
+            <button class="thumb-btn thumb-up" data-message-id="<%= message._id %>">
+              <i>👍</i>
+              <span><%= message.thumbsUp ? message.thumbsUp.length : 0 %></span>
+            </button>
+            
+            <button class="comment-toggle-btn" data-message-id="<%= message._id %>">
+            Comment (<%= message.comments ? message.comments.length : 0 %>)
+            </button>
+            
+            <% if (user && message.user && message.user._id && message.user._id.toString() === user.id) { %>
+              <button class="delete-btn" data-message-id="<%= message._id %>">Delete</button>
+            <% } %>
+          </div>
+
+          <!-- Comments Section (hidden by default) -->
+          <div class="comments-container" id="comments-<%= message._id %>" style="display: none;">
+            
+            <!-- Comment Form -->
+           <form class="comment-form" data-message-id="<%= message._id %>" action="/chatroom/<%= team._id %>/messages/<%= message._id %>/comments" method="POST">
+  <input type="text" name="comment" placeholder="Add a comment..." required>
+  <button type="submit">Post</button>
+</form>
+
+            <!-- Display Comments -->
+            <% if (message.comments && message.comments.length > 0) { %>
+              <div class="comments-list">
+                <% message.comments.forEach(function(comment) { %>
+                  <div class="comment" data-comment-id="<%= comment._id %>">
+                    <div class="comment-header">
+                      <span class="comment-author"><%= comment.username %></span>
+                      <span class="comment-time"><%= new Date(comment.createdAt).toLocaleString() %></span>
+                    </div>
+                    <div class="comment-text"><%= comment.text %></div>
+                    <% if (user && comment.user && comment.user.toString() === user.id) { %>
+                      <button class="delete-comment-btn" data-message-id="<%= message._id %>" data-comment-id="<%= comment._id %>">Delete</button>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <div class="no-messages">
+      <p>No messages yet. Be the first to post!</p>
+    </div>
+  <% } %>
+</section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Soccer Forum. All rights reserved.</p>
+  </footer>
+
+  <!-- Betting Widget Script -->
+  <script type="module">
+    import { initBettingWidget } from '/betting/betting-widget.js';
+    initBettingWidget('betting-content');
+  </script>
+
+
+  <script>
+    document.getElementById('messageForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const teamId = '<%= team._id %>';
+      
+      try {
+        const response = await fetch(`/chatroom/${teamId}/messages`, {
+          method: 'POST',
+          body: formData
+        });
+
+         console.log("Response status:", response.status); // ADD THIS
+      const data = await response.json();
+      console.log("Response data:", data); // ADD THIS
+        
+     if (response.ok) {
+  window.location.reload();
+}
+      } catch (err) {
+        console.error('Error posting message:', err);
+      }
+    });
+  </script>
+  <script>
+  // Toggle comment section visibility
+  document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const messageId = this.dataset.messageId;
+      const commentsContainer = document.getElementById(`comments-${messageId}`);
+      
+      if (commentsContainer.style.display === 'none') {
+        commentsContainer.style.display = 'block';
+      } else {
+        commentsContainer.style.display = 'none';
+      }
+    });
+  });
+
+  // Handle comment submission
+  document.querySelectorAll('.comment-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const messageId = form.dataset.messageId;
+      const teamId = '<%= team._id %>';
+      const formData = new FormData(form);
+      
+      try {
+        const response = await fetch(`/chatroom/${teamId}/messages/${messageId}/comments`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Error posting comment');
+        }
+      } catch (err) {
+        console.error('Error posting comment:', err);
+        alert('Error posting comment');
+      }
+    });
+  });
+
+  // Handle comment deletion
+  document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      if (!confirm('Delete this comment?')) return;
+      
+      const messageId = this.dataset.messageId;
+      const commentId = this.dataset.commentId;
+      const teamId = '<%= team._id %>';
+      
+      try {
+        const response = await fetch(`/chatroom/${teamId}/messages/${messageId}/comments/${commentId}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Error deleting comment');
+        }
+      } catch (err) {
+        console.error('Error deleting comment:', err);
+        alert('Error deleting comment');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

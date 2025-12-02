@@ -1,44 +1,34 @@
-// load the things we need
-var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt')
+const mongoose = require("mongoose");
 
-// define the schema for our user model
-var userSchema = mongoose.Schema({
-
-    local            : {
-        email        : String,
-        password     : String
-    },
-    facebook         : {
-        id           : String,
-        token        : String,
-        name         : String,
-        email        : String
-    },
-    twitter          : {
-        id           : String,
-        token        : String,
-        displayName  : String,
-        username     : String
-    },
-    google           : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    }
-
+const UserSchema = new mongoose.Schema({
+  userName: { type: String, unique: true },
+  email: { type: String, unique: true, lowercase: true },
+  password: String,
+  favoriteTeam: { type: mongoose.Schema.Types.ObjectId, ref: "Team" },
+  profilePic: { type: String, default: "/images/default-avatar.png" },
+  balance: { type: Number, default: 1000 }, // Virtual betting currency
+  createdAt: { type: Date, default: Date.now }
 });
 
-// generating a hash
-userSchema.methods.generateHash = function(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+// Password hash middleware - runs before saving
+UserSchema.pre("save", async function save(next) {
+  const user = this;
+  if (!user.isModified("password")) { return next(); }
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(user.password, salt);
+    user.password = hash;
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Helper method for validating user's password
+UserSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// checking if password is valid
-userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.local.password);
-};
-
-// create the model for users and expose it to our app
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", UserSchema);

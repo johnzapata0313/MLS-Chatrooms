@@ -6,7 +6,7 @@
   <title><%= club.name %> - Fan Room</title>
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="club-header" style="border-bottom: 4px solid <%= club.color %>">
@@ -14,74 +14,157 @@
     <h1><%= club.name %></h1>
     <h2>Fan Discussion Board</h2>
   </header>
-
   <main class="club-main">
     <section class="post-form-section">
       <h3>Share Your Thoughts:</h3>
-      <form action="/club/<%= club.id %>/messages" method="POST" class="post-form">
-        <input type="text" placeholder="Your name" name="name" required>
-        <textarea placeholder="What's on your mind?" name="msg" rows="3" required></textarea>
+      <form id="messageForm" class="post-form" enctype="multipart/form-data">
+        <input type="text" placeholder="Your username" name="username" value="<%= user.userName %>" readonly>
+        <textarea placeholder="What's on your mind?" name="message" rows="3" required></textarea>
+        
+        <!-- Photo upload section -->
+        <div class="photo-upload">
+          <label for="messagePhoto" class="photo-label">
+            <i class="fa fa-camera"></i> Add Photo (optional)
+          </label>
+          <input type="file" id="messagePhoto" name="photo" accept="image/*" style="display: none;">
+          <div id="photoPreview" class="photo-preview"></div>
+        </div>
+        
         <button type="submit" style="background-color: <%= club.color %>">Post</button>
       </form>
     </section>
-
+    
     <section class="messages-section">
       <h3>What Fans Are Saying:</h3>
       
       <% if(messages.length === 0) { %>
         <p class="no-messages">Be the first to post! Share your thoughts about <%= club.name %>.</p>
       <% } %>
-
-      <ul class="messages">
+      
+      <ul class="messages" id="messagesList">
       <% for(var i=0; i<messages.length; i++) {%>
         <li class="message" data-id="<%= messages[i]._id %>">
           <div class="message-header">
-            <span class="message-author"><%= messages[i].name %></span>
-            <% if(messages[i].timestamp) { %>
-              <span class="timestamp">
-                <%
-                  const now = new Date();
-                  const postTime = new Date(messages[i].timestamp);
-                  const diffMs = now - postTime;
-                  const diffMins = Math.floor(diffMs / 60000);
-                  const diffHours = Math.floor(diffMins / 60);
-                  const diffDays = Math.floor(diffHours / 24);
-                  
-                  let timeAgo;
-                  if (diffMins < 1) {
-                    timeAgo = "just now";
-                  } else if (diffMins < 60) {
-                    timeAgo = diffMins + " minute" + (diffMins === 1 ? "" : "s") + " ago";
-                  } else if (diffHours < 24) {
-                    timeAgo = diffHours + " hour" + (diffHours === 1 ? "" : "s") + " ago";
-                  } else {
-                    timeAgo = diffDays + " day" + (diffDays === 1 ? "" : "s") + " ago";
-                  }
-                %>
-                <%= timeAgo %>
-              </span>
-            <% } %>
+            <span class="message-author"><%= messages[i].username %></span>
+            <span class="timestamp">
+              <%
+                const now = new Date();
+                const postTime = new Date(messages[i].createdAt);
+                const diffMs = now - postTime;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMins / 60);
+                const diffDays = Math.floor(diffHours / 24);
+                
+                let timeAgo;
+                if (diffMins < 1) {
+                  timeAgo = "just now";
+                } else if (diffMins < 60) {
+                  timeAgo = diffMins + " minute" + (diffMins === 1 ? "" : "s") + " ago";
+                } else if (diffHours < 24) {
+                  timeAgo = diffHours + " hour" + (diffHours === 1 ? "" : "s") + " ago";
+                } else {
+                  timeAgo = diffDays + " day" + (diffDays === 1 ? "" : "s") + " ago";
+                }
+              %>
+              <%= timeAgo %>
+            </span>
           </div>
+          
           <div class="message-content">
-            <%= messages[i].msg %>
+            <%= messages[i].message %>
           </div>
+          
+          <!-- Display message photo if exists -->
+          <% if(messages[i].photo && messages[i].photo.url) { %>
+            <div class="message-photo">
+              <img src="<%= messages[i].photo.url %>" alt="Message photo">
+            </div>
+          <% } %>
+          
           <div class="message-actions">
-            <button class="thumb-btn thumb-up">
+            <button class="thumb-btn thumb-up" data-message-id="<%= messages[i]._id %>">
               <i class="fa fa-thumbs-up"></i>
-              <span><%= messages[i].thumbUp %></span>
+              <span class="thumb-count"><%= messages[i].thumbsUp.length %></span>
             </button>
-            <button class="thumb-btn thumb-down">
+            <button class="thumb-btn thumb-down" data-message-id="<%= messages[i]._id %>">
               <i class="fa fa-thumbs-down"></i>
-              <span><%= messages[i].thumbDown %></span>
+              <span class="thumb-count"><%= messages[i].thumbsDown.length %></span>
             </button>
-            <!-- <button class="delete-btn"><i class="fa fa-trash"></i></button> -->
+            <button class="comment-toggle-btn" data-message-id="<%= messages[i]._id %>">
+              <i class="fa fa-comment"></i>
+              <span class="comment-count"><%= messages[i].comments.length %></span>
+            </button>
+          </div>
+          
+          <!-- Comments Section -->
+          <div class="comments-section" id="comments-<%= messages[i]._id %>" style="display: none;">
+            <div class="comments-list">
+              <% if(messages[i].comments && messages[i].comments.length > 0) { %>
+                <% messages[i].comments.forEach(function(comment) { %>
+                  <div class="comment" data-comment-id="<%= comment._id %>">
+                    <div class="comment-header">
+                      <span class="comment-author"><%= comment.username %></span>
+                      <span class="comment-time">
+                        <%
+                          const commentTime = new Date(comment.createdAt);
+                          const cDiffMs = now - commentTime;
+                          const cDiffMins = Math.floor(cDiffMs / 60000);
+                          const cDiffHours = Math.floor(cDiffMins / 60);
+                          
+                          let cTimeAgo;
+                          if (cDiffMins < 1) {
+                            cTimeAgo = "just now";
+                          } else if (cDiffMins < 60) {
+                            cTimeAgo = cDiffMins + "m ago";
+                          } else if (cDiffHours < 24) {
+                            cTimeAgo = cDiffHours + "h ago";
+                          } else {
+                            cTimeAgo = Math.floor(cDiffHours / 24) + "d ago";
+                          }
+                        %>
+                        <%= cTimeAgo %>
+                      </span>
+                    </div>
+                    <div class="comment-content"><%= comment.text %></div>
+                    
+                    <!-- Display comment photo if exists -->
+                    <% if(comment.photo && comment.photo.url) { %>
+                      <div class="comment-photo">
+                        <img src="<%= comment.photo.url %>" alt="Comment photo">
+                      </div>
+                    <% } %>
+                  </div>
+                <% }); %>
+              <% } %>
+            </div>
+            
+            <!-- Add Comment Form -->
+            <form class="comment-form" data-message-id="<%= messages[i]._id %>">
+              <textarea placeholder="Add a comment..." name="text" rows="2" required></textarea>
+              
+              <div class="comment-photo-upload">
+                <label class="comment-photo-label">
+                  <i class="fa fa-camera"></i>
+                  <input type="file" name="photo" accept="image/*" class="comment-photo-input">
+                </label>
+                <div class="comment-photo-preview"></div>
+              </div>
+              
+              <button type="submit" style="background-color: <%= club.color %>">
+                <i class="fa fa-paper-plane"></i> Comment
+              </button>
+            </form>
           </div>
         </li>
       <% } %>
       </ul>
     </section>
   </main>
-
-  <script src="/main.js"></script>
+  
+  <script>
+    const clubId = '<%= club._id %>';
+    const clubColor = '<%= club.color %>';
+  </script>
+  <script src="/clubMessages.js"></script>
 </body>
 </html>
